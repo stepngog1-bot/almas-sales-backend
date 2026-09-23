@@ -1,0 +1,13 @@
+{
+  "name": "almas-bale-sales-13000",
+  "version": "2.22.0",
+  "private": true,
+  "description": "Bale B2B automotive glass sales bot V2.19 with fast native Bale search, company branding, sales panel and smart product classification.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

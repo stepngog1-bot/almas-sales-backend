@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>سامانه فروش شرکت شیشه ایمنی الماس نگین بینالود | مدیر فروش</title>
+  <link rel="stylesheet" href="/admin.css">
+  <link rel="stylesheet" href="/sales.css">
+</head>
+<body class="sales-body">
+  <div id="salesLogin" class="login-screen">
+    <form class="login-card" onsubmit="loginSales(event)">
+      <div class="login-logo"><img src="/company-logo.jpg" alt="لوگوی شرکت"></div>
+      <div class="login-brand-copy"><h1>سامانه فروش</h1><div class="login-company">شرکت شیشه ایمنی الماس نگین بینالود</div></div>
+      <p>ورود به پنل مدیر فروش</p>
+      <label class="field"><span>نام کاربری</span><input id="salesUsername" autocomplete="username" required></label>
+      <label class="field"><span>رمز عبور</span><input id="salesPassword" type="password" autocomplete="current-password" required></label>
+      <button class="btn primary login-submit" type="submit">ورود به پنل</button>
+      <div id="salesLoginError" class="login-error"></div>
+    </form>
+  </div>
+  <div class="sales-shell" id="salesApp" hidden>
+    <header class="sales-top">
+      <div class="sales-brand"><div class="brand-mark"><img src="/company-logo.jpg" alt="لوگوی شرکت"></div><div class="sales-brand-copy"><h1>سامانه فروش</h1><div class="sales-company">شرکت شیشه ایمنی الماس نگین بینالود</div><p>پنل مدیر فروش</p></div></div>
+      <div class="sales-top-actions"><button class="btn secondary" onclick="loadSales()">↻ به‌روزرسانی</button><button class="btn secondary" onclick="logoutSales()">خروج</button></div>
+    </header>
+
+    <div class="sales-tabs">
+      <button class="sales-tab on" data-tab="orders" onclick="switchTab('orders')">🛒 سفارش‌ها</button>
+      <button class="sales-tab" data-tab="history" onclick="switchTab('history')">◷ تاریخچه تغییر وضعیت</button>
+    </div>
+
+    <section id="salesOrders" class="sales-section on">
+      <div class="stats sales-stats">
+        <div class="card stat"><div class="stat-icon">🛒</div><div><span class="stat-label">کل سفارش‌ها</span><strong id="ssAll">۰</strong></div></div>
+        <div class="card stat warn"><div class="stat-icon">⏳</div><div><span class="stat-label">ثبت شده</span><strong id="ssRegistered">۰</strong></div></div>
+        <div class="card stat info"><div class="stat-icon">⚙</div><div><span class="stat-label">در حال آماده‌سازی</span><strong id="ssPreparing">۰</strong></div></div>
+        <div class="card stat"><div class="stat-icon">✓</div><div><span class="stat-label">ارسال شده</span><strong id="ssSent">۰</strong></div></div>
+      </div>
+      <div class="card toolbar sales-toolbar">
+        <div class="toolbar-right"><div class="search-box"><span class="search-ico">⌕</span><input id="salesQ" placeholder="جستجو در شماره سفارش یا مشتری" oninput="renderSalesOrders()"></div><select id="salesStatus" class="filter-select" onchange="renderSalesOrders()"><option value="">همه وضعیت‌ها</option><option value="registered">ثبت شده</option><option value="approved">تأیید فروش</option><option value="preparing">در حال آماده‌سازی</option><option value="ready">آماده ارسال</option><option value="sent">ارسال شده</option><option value="cancelled">لغو شده</option></select></div>
+        <div class="toolbar-left"><span id="salesOrderCount" class="muted mini"></span></div>
+      </div>
+      <div class="card table-card"><div class="table-wrap"><table class="table sales-orders-table"><thead><tr><th>شماره سفارش</th><th>مشتری</th><th>اقلام</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th>رهگیری</th></tr></thead><tbody id="salesOrderRows"></tbody></table></div></div>
+    </section>
+
+    <section id="salesHistory" class="sales-section">
+      <div class="card stack sales-history-note"><div class="section-head" style="margin:0"><div><h3>تاریخچه تغییر وضعیت سفارش‌ها</h3><p>فقط تغییراتی که از همین پنل مدیر فروش انجام شده‌اند ثبت می‌شوند و قابل حذف نیستند.</p></div><div class="audit-badge">ثبت خودکار</div></div></div>
+      <div class="card toolbar"><div class="toolbar-right"><div class="search-box"><span class="search-ico">⌕</span><input id="salesHistoryQ" placeholder="جستجو در سفارش، مشتری یا توضیح" oninput="renderSalesHistory()"></div></div><div class="toolbar-left"><span id="salesHistoryCount" class="muted mini"></span></div></div>
+      <div class="card table-card"><div class="table-wrap"><table class="table sales-history-table"><thead><tr><th>زمان</th><th>سفارش</th><th>مشتری</th><th>از</th><th>به</th><th>توضیح مدیر فروش</th></tr></thead><tbody id="salesHistoryRows"></tbody></table></div></div>
+    </section>
+  </div>
+
+  <div class="modal" id="salesModal"><div class="modal-box"><div id="salesModalContent"></div></div></div>
+  <div class="toast-wrap" id="salesToast"></div>
+  <script src="/sales.js"></script>
+</body>
+</html>

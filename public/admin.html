@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>سامانه فروش شرکت شیشه ایمنی الماس نگین بینالود</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="adminLogin" class="login-screen">
+  <form class="login-card" onsubmit="loginAdmin(event)">
+    <div class="login-logo"><img src="/company-logo.jpg" alt="لوگوی شرکت"></div>
+    <div class="login-brand-copy"><h1>سامانه فروش</h1><div class="login-company">شرکت شیشه ایمنی الماس نگین بینالود</div></div>
+    <p>ورود به پنل مدیریت</p>
+    <label class="field"><span>نام کاربری</span><input id="adminUsername" autocomplete="username" required></label>
+    <label class="field"><span>رمز عبور</span><input id="adminPassword" type="password" autocomplete="current-password" required></label>
+    <button class="btn primary login-submit" type="submit">ورود به پنل</button>
+    <div id="adminLoginError" class="login-error"></div>
+  </form>
+</div>
+<div class="layout" id="adminApp" hidden>
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark"><img src="/company-logo.jpg" alt="لوگوی شرکت"></div>
+      <div class="brand-copy"><div class="brand-main">سامانه فروش</div><div class="brand-company">شرکت شیشه ایمنی الماس نگین بینالود</div></div>
+    </div>
+    <div class="nav-label">مدیریت سامانه</div>
+    <nav class="nav">
+      <button class="on" data-sec="dashboard"><span class="ico">⌂</span><span class="nav-text">داشبورد</span></button>
+      <button data-sec="orders"><span class="ico">🛒</span><span class="nav-text">سفارش‌ها</span></button>
+      <button data-sec="customers"><span class="ico">👥</span><span class="nav-text">مشتریان</span></button>
+      <button data-sec="products"><span class="ico">▣</span><span class="nav-text">محصولات</span></button>
+      <button data-sec="prices"><span class="ico">🏷</span><span class="nav-text">قیمت‌گذاری</span></button>
+      <button data-sec="payments"><span class="ico">💳</span><span class="nav-text">پرداخت نقدی</span></button>
+      <button data-sec="saleshistory"><span class="ico">◷</span><span class="nav-text">تاریخچه مدیر فروش</span></button>
+    </nav>
+    <div class="nav-label">ربات و تنظیمات</div>
+    <nav class="nav">
+      <button data-sec="texts"><span class="ico">✎</span><span class="nav-text">متن‌های ربات</span></button>
+      <button data-sec="settings"><span class="ico">⚙</span><span class="nav-text">اتصال بله</span></button>
+    </nav>
+    <div class="side-foot">نسخه پنل 2.33<br>طراحی شده برای فروش B2B کارخانه</div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="page-title"><h1 id="title">داشبورد فروش</h1><p id="subtitle">نمای کلی مشتریان، سفارش‌ها و فروش</p></div>
+      <div class="top-actions"><button class="btn secondary" onclick="loadAll()">↻ به‌روزرسانی</button><button class="btn secondary" onclick="logoutAdmin()">خروج</button></div>
+    </header>
+
+    <section id="dashboard" class="section on">
+      <div class="stats">
+        <div class="card stat"><div class="stat-icon">👥</div><div><div class="stat-label">مشتریان فعال</div><strong id="dActive">-</strong></div></div>
+        <div class="card stat warn"><div class="stat-icon">⏳</div><div><div class="stat-label">در انتظار تأیید</div><strong id="dPending">-</strong></div></div>
+        <div class="card stat info"><div class="stat-icon">🛒</div><div><div class="stat-label">کل سفارش‌ها</div><strong id="dOrders">-</strong></div></div>
+        <div class="card stat"><div class="stat-icon">﷼</div><div><div class="stat-label">ارزش سفارش‌ها</div><strong id="dSales">-</strong></div></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card table-card">
+          <div class="section-head" style="padding:18px 18px 5px"><div><h3>آخرین سفارش‌ها</h3><p>آخرین فعالیت مشتریان در سامانه</p></div><button class="btn secondary sm" onclick="goSection('orders')">مشاهده همه</button></div>
+          <div class="table-wrap"><table class="table" style="min-width:650px"><thead><tr><th>شماره سفارش</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead><tbody id="dashOrders"></tbody></table></div>
+        </div>
+        <div class="card stack">
+          <div class="section-head"><div><h3>دسترسی سریع</h3><p>کارهای پرکاربرد مدیریت فروش</p></div></div>
+          <div class="quick-grid">
+            <button class="quick-link" onclick="openCustomer()"><b>＋ مشتری جدید</b><small>ثبت مشتری و گروه قیمت</small></button>
+            <button class="quick-link" onclick="openProduct()"><b>＋ محصول جدید</b><small>تعریف شیشه و قیمت‌ها</small></button>
+            <button class="quick-link" onclick="goSection('orders')"><b>🛒 سفارش‌ها</b><small>بررسی و تغییر وضعیت</small></button>
+            <button class="quick-link" onclick="goSection('texts')"><b>✎ متن‌های ربات</b><small>ویرایش پیام‌ها و دکمه‌ها</small></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="orders" class="section">
+      <div class="stats">
+        <div class="card stat"><div class="stat-icon">🧾</div><div><div class="stat-label">کل سفارش‌ها</div><strong id="oAll">-</strong></div></div>
+        <div class="card stat warn"><div class="stat-icon">●</div><div><div class="stat-label">ثبت شده</div><strong id="oRegistered">-</strong></div></div>
+        <div class="card stat info"><div class="stat-icon">⚙</div><div><div class="stat-label">در حال آماده‌سازی</div><strong id="oPreparing">-</strong></div></div>
+        <div class="card stat"><div class="stat-icon">✓</div><div><div class="stat-label">ارسال شده</div><strong id="oSent">-</strong></div></div>
+      </div>
+      <div class="card toolbar">
+        <div class="toolbar-right">
+          <div class="search-box"><span class="search-ico">⌕</span><input id="orderQ" placeholder="جستجو در شماره سفارش یا نام مشتری" oninput="renderOrders()"></div>
+          <select id="orderStatusFilter" class="filter-select" onchange="renderOrders()"><option value="">همه وضعیت‌ها</option><option value="registered">ثبت شده</option><option value="approved">تأیید فروش</option><option value="preparing">در حال آماده‌سازی</option><option value="ready">آماده ارسال</option><option value="sent">ارسال شده</option><option value="cancelled">لغو شده</option></select>
+        </div>
+        <div class="toolbar-left"><span id="orderCountLabel" class="muted mini"></span></div>
+      </div>
+      <div class="card table-card"><div class="table-wrap"><table class="table"><thead><tr><th>سفارش</th><th>مشتری</th><th>اقلام</th><th>مبلغ کل</th><th>وضعیت</th><th>تاریخ</th><th>عملیات</th></tr></thead><tbody id="orderRows"></tbody></table></div></div>
+    </section>
+
+    <section id="customers" class="section">
+      <div class="stats">
+        <div class="card stat"><div class="stat-icon">👥</div><div><div class="stat-label">مشتریان فعال</div><strong id="sActive">-</strong></div></div>
+        <div class="card stat warn"><div class="stat-icon">⏳</div><div><div class="stat-label">در انتظار تأیید</div><strong id="sPending">-</strong></div></div>
+        <div class="card stat info"><div class="stat-icon">🏷</div><div><div class="stat-label">گروه‌های قیمت</div><strong id="sGroups">-</strong></div></div>
+        <div class="card stat"><div class="stat-icon">★</div><div><div class="stat-label">قیمت‌های اختصاصی</div><strong id="sCustom">-</strong></div></div>
+      </div>
+      <div class="card toolbar">
+        <div class="toolbar-right"><div class="search-box"><span class="search-ico">⌕</span><input id="q" placeholder="جستجو در نام، کد، تماس یا شناسه بله" oninput="renderCustomers()"></div><select id="customerStatusFilter" class="filter-select" onchange="renderCustomers()"><option value="">همه وضعیت‌ها</option><option value="active">فعال</option><option value="pending">در انتظار تأیید</option><option value="inactive">غیرفعال</option></select></div>
+        <div class="toolbar-left"><button class="btn primary" onclick="openCustomer()">＋ افزودن مشتری</button></div>
+      </div>
+      <div class="card table-card"><div class="table-wrap"><table class="table"><thead><tr><th>مشتری</th><th>کد</th><th>شناسه بله</th><th>گروه قیمت</th><th>وضعیت</th><th>تماس</th><th>تاریخ عضویت</th><th>عملیات</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>
+    </section>
+
+    <section id="products" class="section">
+      <div class="card toolbar product-toolbar">
+        <div class="toolbar-right"><div class="search-box"><span class="search-ico">⌕</span><input id="productQ" placeholder="جستجو در نام محصول یا خودرو" oninput="renderProducts()"></div><select id="productVehicleFilter" class="filter-select" onchange="renderProducts()"><option value="">همه خودروها</option></select><select id="productGlassFilter" class="filter-select" onchange="renderProducts()"><option value="">همه انواع شیشه</option></select><span id="productFilterCount" class="muted mini"></span></div>
+        <div class="toolbar-left"><span class="bale-front-note">بله: فقط فعال + جلو</span><button class="btn secondary" onclick="openGlassTypeRules()">🧩 قوانین نوع شیشه</button><button class="btn secondary" onclick="openVehicleManager()">🚗 مدیریت خودروها</button><button class="btn secondary" onclick="openVehicleRules()">🧠 قوانین خودرو</button><button class="btn secondary" onclick="openExcelImport()">📥 Excel</button><button class="btn primary" onclick="openProduct()">＋ افزودن محصول</button></div>
+      </div>
+      <div class="card table-card"><div class="table-wrap"><table class="table product-table"><colgroup><col class="col-name"><col class="col-vehicle"><col class="col-status"><col class="col-price"><col class="col-price"><col class="col-price"><col class="col-price"><col class="col-actions"></colgroup><thead><tr><th>نام محصول</th><th>خودرو</th><th>وضعیت</th><th>قیمت پایه</th><th>گروه A</th><th>گروه B</th><th>گروه C</th><th>عملیات</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
+    </section>
+
+    <section id="prices" class="section">
+      <div class="grid-2">
+        <div class="card stack">
+          <div class="section-head"><div><h3>گروه‌های قیمت</h3><p>دسته‌بندی مشتریان برای قیمت‌گذاری</p></div><button class="btn primary sm" onclick="openGroup()">＋ گروه جدید</button></div>
+          <div id="groupList" class="list"></div>
+        </div>
+        <div class="card stack">
+          <div class="section-head"><div><h3>قیمت اختصاصی مشتری</h3><p>فقط در صورت نیاز برای یک مشتری خاص</p></div></div>
+          <div class="hint" style="margin-bottom:14px">اولویت محاسبه: قیمت اختصاصی مشتری ← گروه قیمت ← قیمت پایه</div>
+          <div class="form-grid"><label class="field full"><span>مشتری</span><select id="cpCustomer"></select></label><label class="field full"><span>محصول</span><select id="cpProduct"></select></label><label class="field full"><span>قیمت (تومان)</span><input id="cpPrice" type="number" min="0" placeholder="مثلاً 2500000"></label></div>
+          <div style="margin-top:13px"><button class="btn primary" onclick="saveCustomPrice()">ذخیره قیمت</button></div>
+          <div style="height:1px;background:var(--line);margin:20px 0"></div>
+          <div id="cpList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="payments" class="section">
+      <div class="grid-2 payment-grid">
+        <div class="card stack">
+          <div class="section-head"><div><h3>تنظیمات پرداخت نقدی</h3><p>زیرساخت پرداخت نقدی؛ اتصال نهایی درگاه بعداً انجام می‌شود.</p></div></div>
+          <div class="form-stack">
+            <label class="field"><span>لینک پرداخت / آدرس درگاه</span><input id="paymentUrl" dir="ltr" placeholder="https://... یا لینک شامل {amount}"></label>
+          </div>
+          <div class="hint">گزینه پرداخت نقدی برای همه مشتریان در بله نمایش داده می‌شود. فعلاً تأیید واقعی تراکنش به درگاه متصل نیست؛ اگر لینک خالی باشد، سبد مشتری محفوظ می‌ماند.<br>در لینک می‌توانی از <code>{amount}</code>، <code>{total}</code>، <code>{discount}</code>، <code>{customerId}</code> و <code>{baleUserId}</code> استفاده کنی.</div>
+          <div><button class="btn primary" onclick="savePaymentSettings()">ذخیره تنظیمات پرداخت</button></div>
+        </div>
+        <div class="card stack">
+          <div class="section-head"><div><h3>تخفیف نقدی هر مشتری</h3><p>برای هر مشتری مستقل و قابل تغییر است.</p></div></div>
+          <div class="form-stack">
+            <label class="field"><span>مشتری</span><select id="cashCustomer"></select></label>
+            <label class="field"><span>نوع تخفیف</span><select id="cashDiscountType"><option value="percent">درصدی</option><option value="fixed">مبلغ ثابت (تومان)</option></select></label>
+            <label class="field"><span>مقدار تخفیف</span><input id="cashDiscountValue" type="number" min="0" step="0.01" placeholder="مثلاً 5"></label>
+          </div>
+          <div class="toolbar-left"><button class="btn primary" onclick="saveCashTerm()">ذخیره برای مشتری</button><button class="btn secondary" onclick="loadCashTermForSelected()">بارگذاری مقدار فعلی</button></div>
+        </div>
+      </div>
+      <div class="card table-card" style="margin-top:16px"><div class="section-head" style="padding:18px 18px 6px"><div><h3>تخفیف‌های ثبت‌شده مشتریان</h3><p>اگر مشتری در این جدول نباشد، تخفیف نقدی او صفر است.</p></div></div><div class="table-wrap"><table class="table"><thead><tr><th>مشتری</th><th>نوع تخفیف</th><th>مقدار</th><th>عملیات</th></tr></thead><tbody id="cashTermsRows"></tbody></table></div></div>
+    </section>
+
+    <section id="saleshistory" class="section">
+      <div class="card toolbar">
+        <div class="toolbar-right"><div class="search-box"><span class="search-ico">⌕</span><input id="salesHistoryQ" placeholder="جستجو در سفارش، مشتری یا توضیح" oninput="renderSalesHistory()"></div></div>
+        <div class="toolbar-left"><span id="salesHistoryCount" class="muted mini"></span><button class="btn secondary" onclick="loadSalesHistory()">↻ به‌روزرسانی</button></div>
+      </div>
+      <div class="card table-card"><div class="table-wrap"><table class="table"><thead><tr><th>زمان</th><th>سفارش</th><th>مشتری</th><th>وضعیت قبلی</th><th>وضعیت جدید</th><th>توضیح مدیر فروش</th></tr></thead><tbody id="salesHistoryRows"></tbody></table></div></div>
+    </section>
+
+    <section id="texts" class="section">
+      <div class="card stack" style="margin-bottom:16px"><div class="section-head" style="margin:0"><div><h3>متن‌ها و دکمه‌های ربات بله</h3><p>متن‌های قابل مشاهده مشتری را بدون تغییر کد ویرایش کن.</p></div><div class="toolbar-left"><button class="btn primary" onclick="saveBotTexts()">💾 ذخیره تغییرات</button><button class="btn secondary" onclick="resetBotTexts()">↩ بازگردانی پیش‌فرض</button></div></div></div>
+      <div class="bot-grid">
+        <div class="card bot-card"><h3>پیام‌های اصلی</h3><p class="muted mini placeholder-help">متغیرها: <code>{name}</code> <code>{id}</code></p><label class="field"><span>عنوان اصلی ربات</span><input id="bt_brandTitle"></label><label class="field"><span>پیام مشتری فعال</span><textarea id="bt_activeWelcome"></textarea></label><label class="field"><span>پیام انتظار تأیید</span><textarea id="bt_pendingText"></textarea></label><label class="field"><span>پیام حساب غیرفعال</span><textarea id="bt_inactiveText"></textarea></label><label class="field"><span>پیام نبود HTTPS</span><textarea id="bt_noHttpsNotice"></textarea></label></div>
+        <div class="card bot-card"><h3>متن دکمه‌ها</h3><p class="muted mini">ایموجی‌ها را هم می‌توانی تغییر بدهی. متن و ایموجی دقیقاً همان‌طور که ذخیره می‌کنی به بله ارسال می‌شود.</p><label class="field"><span>محصولات</span><input id="bt_btnProducts"></label><label class="field"><span>جستجوی شیشه</span><input id="bt_btnSearch"></label><label class="field"><span>سبد سفارش</span><input id="bt_btnCart"></label><label class="field"><span>سفارش‌های من</span><input id="bt_btnOrders"></label><label class="field"><span>حساب من</span><input id="bt_btnAccount"></label><label class="field"><span>ارتباط با فروش</span><input id="bt_btnSupport"></label><label class="field"><span>منوی اصلی</span><input id="bt_btnHome"></label><label class="field"><span>شروع مجدد</span><input id="bt_btnRestart"></label><label class="field"><span>فروشگاه گرافیکی</span><input id="bt_btnShop"></label><label class="field"><span>بررسی وضعیت</span><input id="bt_btnCheckStatus"></label><label class="field"><span>شناسه من</span><input id="bt_btnMyId"></label></div>
+        <div class="card bot-card"><h3>فروش داخل بله</h3><p class="muted mini placeholder-help">محصول: <code>{name}</code> <code>{code}</code> <code>{vehicle}</code> <code>{type}</code> <code>{price}</code></p><label class="field"><span>عنوان انتخاب خودرو</span><textarea id="bt_productsTitle"></textarea></label><label class="field"><span>عنوان محصولات خودرو</span><textarea id="bt_vehicleProductsTitle"></textarea></label><label class="field"><span>قالب دکمه محصول</span><input id="bt_productButtonTemplate" placeholder="🪟 {name}"></label><div class="product-photo-note">پیشنهاد خلوت: <b>🪟 {name}</b></div><label class="field"><span>کارت محصول</span><textarea id="bt_productCard"></textarea></label><label class="field"><span>پیام جستجو</span><textarea id="bt_searchPrompt"></textarea></label><label class="field"><span>عنوان نتایج جستجو</span><input id="bt_searchResultsTitle"></label><label class="field"><span>جستجوی بدون نتیجه</span><textarea id="bt_searchNoResult"></textarea></label><label class="field"><span>عنوان سبد</span><input id="bt_cartTitle"></label><label class="field"><span>سبد خالی</span><textarea id="bt_cartEmpty"></textarea></label><label class="field"><span>افزودن به سبد</span><textarea id="bt_cartAdded"></textarea></label><label class="field"><span>تأیید نهایی سفارش</span><textarea id="bt_orderConfirmTitle"></textarea></label><label class="field"><span>نمایش تعداد در سبد</span><textarea id="bt_productCartQty"></textarea></label><label class="field"><span>دکمه افزودن ۱</span><input id="bt_btnAdd1"></label><label class="field"><span>دکمه افزودن ۵</span><input id="bt_btnAdd5"></label><label class="field"><span>دکمه افزودن ۱۰</span><input id="bt_btnAdd10"></label></div>
+        <div class="card bot-card"><h3>حساب و سفارش</h3><p class="muted mini placeholder-help">سفارش: <code>{orderId}</code> <code>{status}</code> <code>{total}</code></p><label class="field"><span>پیام شناسه کاربر</span><textarea id="bt_myIdText"></textarea></label><label class="field"><span>پیام حساب مشتری</span><textarea id="bt_accountText"></textarea></label><label class="field"><span>پیام ارتباط با فروش</span><textarea id="bt_supportText"></textarea></label><label class="field"><span>عنوان سفارش‌های من</span><input id="bt_ordersTitle"></label><label class="field"><span>متن نبود سفارش</span><textarea id="bt_ordersEmpty"></textarea></label><label class="field"><span>پیام تغییر وضعیت سفارش</span><textarea id="bt_orderStatusChanged"></textarea></label><label class="field"><span>پیام ثبت موفق سفارش</span><textarea id="bt_orderRegistered"></textarea></label><label class="field"><span>عنوان جزئیات سفارش</span><textarea id="bt_orderDetailsTitle"></textarea></label><label class="field"><span>دکمه تکرار سفارش</span><input id="bt_btnReorder"></label><label class="field"><span>پیام انتقال سفارش قبلی</span><textarea id="bt_reorderAdded"></textarea></label></div>
+        <div class="card bot-card"><h3>پیش‌نمایش</h3><p class="muted mini">پیش‌نمایش با اطلاعات نمونه</p><div id="botPreview" class="preview-box"></div><br><button class="btn secondary" onclick="renderBotPreview()">↻ به‌روزرسانی پیش‌نمایش</button><div id="botTextResult" class="hint" style="margin-top:14px">در حال خواندن متن‌ها...</div></div>
+      </div>
+    </section>
+
+    <section id="settings" class="section">
+      <div class="grid-2">
+        <div class="card stack"><div class="section-head"><div><h3>اتصال ربات بله</h3><p>توکن پس از ذخیره دوباره نمایش داده نمی‌شود.</p></div></div><div class="form-grid"><label class="field full"><span>توکن بازوی بله</span><input id="baleToken" type="password" placeholder="123456789:..." autocomplete="off"></label><label class="field full"><span>آدرس عمومی HTTPS مینی‌اپ</span><input id="baleUrl" dir="ltr" placeholder="https://sales.example.com"></label><label class="field full"><span>شناسه یا لینک بله واحد فروش</span><input id="salesBaleLink" dir="ltr" placeholder="@username یا https://ble.ir/username"></label><label class="field"><span>Long Polling</span><select id="balePolling"><option value="true">فعال</option><option value="false">غیرفعال</option></select></label><label class="field"><span>حالت آزمایشی</span><select id="baleDemo"><option value="true">فعال</option><option value="false">غیرفعال</option></select></label></div><div style="margin-top:14px" class="toolbar-left"><button class="btn primary" onclick="saveBaleSettings()">ذخیره تنظیمات</button><button class="btn secondary" onclick="testBale()">تست اتصال</button></div><div id="baleResult" class="hint" style="margin-top:14px">در حال خواندن وضعیت...</div><div class="hint" style="margin-top:10px">برای بازشدن مستقیم گفتگوی بله، شناسه یا لینک بله واحد فروش را وارد کنید. شماره تلفن به‌تنهایی لینک مستقیم ایجاد نمی‌کند.</div></div>
+        <div class="card stack"><div class="section-head"><div><h3>وضعیت راه‌اندازی</h3><p>نمایش وضعیت سرویس‌های ربات</p></div></div><div id="baleStatus" class="list"></div><div class="hint" style="margin-top:14px">Long Polling برای ربات روی کامپیوتر کافی است. HTTPS فقط برای Mini App لازم است.</div></div>
+        <div class="card stack"><div class="section-head"><div><h3>ورود ادمین</h3><p>نام کاربری و رمز عبور پنل مدیریت را از اینجا تغییر بده.</p></div></div><div class="form-stack"><label class="field"><span>نام کاربری ادمین</span><input id="adminManagerUser" autocomplete="off" placeholder="مثلاً admin"></label><label class="field"><span>رمز جدید ادمین</span><input id="adminManagerPassword" type="password" autocomplete="new-password" placeholder="برای عدم تغییر، خالی بگذار"></label></div><div class="toolbar-left" style="margin-top:12px"><button class="btn primary" onclick="saveAdminSettings()">ذخیره اطلاعات ورود</button></div><div id="adminManagerResult" class="hint" style="margin-top:14px">در حال خواندن وضعیت...</div></div>
+        <div class="card stack"><div class="section-head"><div><h3>پنل مدیر فروش</h3><p>پنل مستقل فقط برای مشاهده و رهگیری سفارش‌ها</p></div></div><div class="form-stack"><label class="field"><span>نام کاربری مدیر فروش</span><input id="salesManagerUser" autocomplete="off" placeholder="مثلاً sales"></label><label class="field"><span>رمز جدید مدیر فروش</span><input id="salesManagerKey" type="password" autocomplete="new-password" placeholder="برای عدم تغییر، خالی بگذار"></label></div><div class="toolbar-left" style="margin-top:12px"><button class="btn primary" onclick="saveSalesSettings()">ذخیره رمز</button><a class="btn secondary" href="/sales" target="_blank">باز کردن پنل مدیر فروش</a></div><div id="salesManagerResult" class="hint" style="margin-top:14px">در حال خواندن وضعیت...</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box"><div id="modalContent"></div></div></div>
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="/admin.js"></script>
+</body>
+</html>

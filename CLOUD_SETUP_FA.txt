@@ -1,0 +1,45 @@
+راه‌اندازی Cloud روی Railway
+=============================
+
+1) این پروژه را در یک Repository خصوصی GitHub قرار بده.
+   مهم: .env واقعی را Upload نکن.
+
+2) در Railway:
+   New Project -> Deploy from GitHub Repo -> همین Repository
+
+3) بعد از ساخته شدن Service، یک Volume اضافه کن:
+   Mount Path: /app/data
+
+4) در Variables این موارد را تنظیم کن:
+   HOST=0.0.0.0
+   DATA_DIR=/app/data
+   ADMIN_KEY=<مقدار فعلی سیستم یا مقدار امن جدید>
+   ADMIN_USERNAME=<مقدار فعلی>
+   ADMIN_PASSWORD=<مقدار فعلی>
+   SALES_MANAGER_KEY=<مقدار فعلی>
+   SALES_MANAGER_USERNAME=<مقدار فعلی>
+   SESSION_SECRET=<مقدار فعلی یا Secret قوی جدید>
+   BALE_BOT_TOKEN=<اگر خود Bot هم باید از Cloud کار کند>
+   BALE_POLLING=false   (برای تست Android؛ تا وقتی Backend محلی روشن است true نکن)
+   ALLOW_DEMO=false
+
+   PORT را خود Railway می‌سازد؛ دستی تنظیم نکن.
+
+5) در Service -> Settings / Networking یک Public Domain تولید کن.
+   Railway یک HTTPS ثابت می‌دهد.
+
+6) تست:
+   https://YOUR-DOMAIN/api/app/health
+
+7) در Android > Server Address فقط Base URL را بگذار:
+   https://YOUR-DOMAIN
+
+نکته دیتای ماندگار
+------------------
+نسخه Cloud در اولین اجرا store.json فعلی را داخل Volume /app/data کپی می‌کند.
+بعد از آن همه تغییرات مشتری/محصول/سفارش روی Volume ذخیره می‌شود و با Redeploy از بین نمی‌رود.
+
+مهم درباره همگام‌سازی
+---------------------
+بعد از اینکه Cloud را به عنوان سیستم اصلی تأیید کردی، همزمان روی Backend محلی و Cloud سفارش واقعی ثبت نکن؛
+چون دو store.json مستقل خواهند شد. هدف نهایی این است که Cloud منبع اصلی شود و پنل فروش هم از همان URL Cloud استفاده کند.
