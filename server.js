@@ -111,10 +111,16 @@ function publicCustomerForApp(store,c){
   const term=cashTermFor(store,c);
   return {
     id:c.id,
+    customerNumber:c.id,
     name:String(c.name||''),
+    fullName:String(c.name||''),
     contact:String(c.contact||''),
     phone:String(c.phone||''),
+    mobile:String(c.phone||''),
+    companyName:String(c.appBusinessName||''),
+    city:String(c.appCity||''),
     status:String(c.status||''),
+    createdAt:String(c.createdAt||c.appRegisteredAt||''),
     cashDiscountType:term.discountType,
     cashDiscountValue:term.discountValue,
     supportUrl:salesBaleLinkOf(store)
@@ -226,6 +232,18 @@ function todayFa(){ return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'n
 function nowFaIran(){ const d=new Date(); const date=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit'}).format(d); const time=new Intl.DateTimeFormat('fa-IR',{timeZone:'Asia/Tehran',hour:'2-digit',minute:'2-digit',hour12:false}).format(d); return `${date} ${time}`; }
 function nextAppOrderId(store,customer){ const customerNo=String(customer?.id||'').trim()||'UNKNOWN'; const prefix=`ALM-${customerNo}-`; let max=0; for(const o of (store.orders||[])){ const id=String(o?.id||''); if(id.startsWith(prefix)){ const n=Number(id.slice(prefix.length)); if(Number.isFinite(n)&&n>max)max=n; } } return `${prefix}${max+1}`; }
 function statusFa(s){return ({registered:'ثبت شده',approved:'تأیید فروش',preparing:'در حال آماده‌سازی',ready:'آماده ارسال',sent:'ارسال شده',cancelled:'لغو شده'})[s]||s;}
+function appOrderView(o){
+  return {
+    ...o,
+    orderNo:o.id,
+    paymentMethodCode:String(o.paymentMethod||'credit'),
+    paymentMethod:String(o.paymentMethod||'credit')==='cash'?'نقدی':'اعتباری',
+    statusLabel:statusFa(o.status),
+    totalQuantity:(o.items||[]).reduce((sum,row)=>sum+Number(row.qty||0),0),
+    totalFormatted:Number(o.total||0).toLocaleString('en-US')+' تومان',
+    payableTotalFormatted:Number(o.payableTotal??o.total??0).toLocaleString('en-US')+' تومان'
+  };
+}
 function normalizeFaSearch(v){return String(v||'').toLocaleLowerCase('fa').replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[-_\s]+/g,' ').trim();}
 function productImageFull(pr){if(!pr?.imageFile)return '';const f=path.basename(pr.imageFile);const full=path.join(PRODUCT_IMAGE_DIR,f);return fs.existsSync(full)?full:'';}
 function imageMimeFromName(name){const e=path.extname(name).toLowerCase();return e==='.png'?'image/png':e==='.webp'?'image/webp':'image/jpeg';}
@@ -1295,20 +1313,24 @@ const server=http.createServer(async (req,res)=>{
       const catalog=catalogForApp(req,s,c,vehicles);
       return json(res,200,{ok:true,customer:publicCustomerForApp(s,c),...catalog});
     }
+    if(p==='/api/app/account' && req.method==='GET'){
+      const s=readStore(); const c=appCustomer(req,s);
+      if(!c)return json(res,401,{ok:false,error:'نشست فروشگاه معتبر نیست؛ دوباره وارد شوید'});
+      return json(res,200,{ok:true,customer:publicCustomerForApp(s,c)});
+    }
     if(p==='/api/app/orders' && req.method==='GET'){
       const s=readStore(); const c=appCustomer(req,s);
       if(!c)return json(res,401,{ok:false,error:'نشست فروشگاه معتبر نیست'});
-      const items=s.orders.filter(x=>x.customerId===c.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).map(o=>({
-        ...o,
-        orderNo:o.id,
-        paymentMethodCode:String(o.paymentMethod||'credit'),
-        paymentMethod:String(o.paymentMethod||'credit')==='cash'?'نقدی':'اعتباری',
-        statusLabel:statusFa(o.status),
-        totalQuantity:(o.items||[]).reduce((sum,row)=>sum+Number(row.qty||0),0),
-        totalFormatted:Number(o.total||0).toLocaleString('en-US')+' تومان',
-        payableTotalFormatted:Number(o.payableTotal??o.total??0).toLocaleString('en-US')+' تومان'
-      }));
+      const items=s.orders.filter(x=>x.customerId===c.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).map(appOrderView);
       return json(res,200,{ok:true,items});
+    }
+    const appOrderDetail=p.match(/^\/api\/app\/orders\/([^/]+)$/);
+    if(appOrderDetail && req.method==='GET'){
+      const s=readStore(); const c=appCustomer(req,s);
+      if(!c)return json(res,401,{ok:false,error:'نشست فروشگاه معتبر نیست'});
+      const order=s.orders.find(x=>x.customerId===c.id&&x.id===decodeURIComponent(appOrderDetail[1]));
+      if(!order)return json(res,404,{ok:false,error:'سفارش پیدا نشد'});
+      return json(res,200,{ok:true,order:appOrderView(order)});
     }
     if(p==='/api/app/orders' && req.method==='POST'){
       const b=await parseBody(req); const s=readStore(); const c=appCustomer(req,s);
@@ -1328,7 +1350,7 @@ const server=http.createServer(async (req,res)=>{
       const order={id:nextAppOrderId(s,c),customerId:c.id,customerName:c.name,baleUserId:String(c.baleUserId||''),items:lines,total,paymentMethod:method,paymentStatus:isCash?'pending':'credit',discountAmount:Number(cash.discount||0),payableTotal:Number(cash.payable||total),status:'registered',createdAt:nowFaIran()};
       s.orders.push(order);addAudit(s,{actor:'customer',category:'order',action:'order.create',entityType:'order',entityId:order.id,title:order.customerName,summary:`ثبت سفارش از Mini App با ${lines.length} قلم و مبلغ ${total.toLocaleString('fa-IR')} تومان`});writeStore(s);
       if(BALE_BOT_TOKEN && c.baleUserId){const bt=normalizeBotTexts(s); bale('sendMessage',{chat_id:Number(c.baleUserId),text:renderBotText(bt.orderRegistered,{orderId:order.id,total:total.toLocaleString('fa-IR'),status:'ثبت شده'})}).catch(()=>{});}
-      return json(res,201,{ok:true,order:{...order,orderNo:order.id,paymentMethodCode:order.paymentMethod,paymentMethod:order.paymentMethod==='cash'?'نقدی':'اعتباری',statusLabel:statusFa(order.status),totalQuantity:lines.reduce((sum,row)=>sum+row.qty,0)},paymentUrl});
+      return json(res,201,{ok:true,order:appOrderView(order),paymentUrl});
     }
     if(p==='/bale/webhook' && req.method==='POST'){ const u=await parseBody(req); await processBaleUpdate(u); return json(res,200,{ok:true}); }
     if(serveFile(req,res,p)) return;
